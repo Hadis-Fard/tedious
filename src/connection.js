@@ -1,3 +1,4 @@
+const deprecate = require('depd')('tedious');
 const BulkLoad = require('./bulk-load');
 const Debug = require('./debug');
 const EventEmitter = require('events').EventEmitter;
@@ -110,7 +111,9 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.abortTransactionOnError != undefined) {
-        this.validateBooleanOptions(config.options.abortTransactionOnError, 'options.abortTransactionOnError');
+        if (typeof config.options.abortTransactionOnError !== 'boolean') {
+          throw new TypeError('options.abortTransactionOnError must be a boolean (true or false).');
+        }
         this.config.options.abortTransactionOnError = config.options.abortTransactionOnError;
       }
 
@@ -119,7 +122,7 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.camelCaseColumns != undefined) {
-        this.validateBooleanOptions(config.options.camelCaseColumns, 'options.camelCaseColumns');
+        this.sendBooleanDeprecationMessage(config.options.camelCaseColumns, 'options.camelCaseColumns');
         this.config.options.camelCaseColumns = config.options.camelCaseColumns;
       }
 
@@ -179,62 +182,91 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.enableAnsiNull != undefined) {
-        this.validateBooleanOptions(config.options.enableAnsiNull, 'options.enableAnsiNull');
+        if (typeof config.options.enableAnsiNull !== 'boolean') {
+          throw new TypeError('options.enableAnsiNull must be a boolean (true or false).');
+        }
+
         this.config.options.enableAnsiNull = config.options.enableAnsiNull;
       }
 
       if (config.options.enableAnsiNullDefault != undefined) {
-        this.validateBooleanOptions(config.options.enableAnsiNullDefault, 'options.enableAnsiNullDefault');
+        if (typeof config.options.enableAnsiNullDefault !== 'boolean') {
+          throw new TypeError('options.enableAnsiNullDefault must be a boolean (true or false).');
+        }
+
         this.config.options.enableAnsiNullDefault = config.options.enableAnsiNullDefault;
       }
 
       if (config.options.enableAnsiPadding != undefined) {
-        this.validateBooleanOptions(config.options.enableAnsiPadding, 'options.enableAnsiPadding');
+        if (typeof config.options.enableAnsiPadding !== 'boolean') {
+          throw new TypeError('options.enableAnsiPadding must be a boolean (true or false).');
+        }
+
         this.config.options.enableAnsiPadding = config.options.enableAnsiPadding;
       }
 
       if (config.options.enableAnsiWarnings != undefined) {
-        this.validateBooleanOptions(config.options.enableAnsiWarnings, 'options.enableAnsiWarnings');
+        if (typeof config.options.enableAnsiWarnings !== 'boolean') {
+          throw new TypeError('options.enableAnsiWarnings must be a boolean (true or false).');
+        }
+
         this.config.options.enableAnsiWarnings = config.options.enableAnsiWarnings;
       }
 
       if (config.options.enableArithAbort !== undefined) {
-        this.validateBooleanOptions(config.options.enableArithAbort, 'options.enableArithAbort');
+        if (typeof config.options.enableArithAbort !== 'boolean') {
+          throw new TypeError('options.enableArithAbort must be a boolean (true or false).');
+        }
+
         this.config.options.enableArithAbort = config.options.enableArithAbort;
       }
 
       if (config.options.enableConcatNullYieldsNull != undefined) {
-        this.validateBooleanOptions(config.options.enableConcatNullYieldsNull, 'options.enableConcatNullYieldsNull');
+        if (typeof config.options.enableConcatNullYieldsNull !== 'boolean') {
+          throw new TypeError('options.enableConcatNullYieldsNull must be a boolean (true or false).');
+        }
+
         this.config.options.enableConcatNullYieldsNull = config.options.enableConcatNullYieldsNull;
       }
 
       if (config.options.enableCursorCloseOnCommit != undefined) {
-        this.validateBooleanOptions(config.options.enableCursorCloseOnCommit, 'options.enableCursorCloseOnCommit');
+        if (typeof config.options.enableCursorCloseOnCommit !== 'boolean') {
+          throw new TypeError('options.enableCursorCloseOnCommit must be a boolean (true or false).');
+        }
+
         this.config.options.enableCursorCloseOnCommit = config.options.enableCursorCloseOnCommit;
       }
 
       if (config.options.enableImplicitTransactions != undefined) {
-        this.validateBooleanOptions(config.options.enableImplicitTransactions, 'options.enableImplicitTransactions');
+        if (typeof config.options.enableImplicitTransactions !== 'boolean') {
+          throw new TypeError('options.enableImplicitTransactions must be a boolean (true or false).');
+        }
+
         this.config.options.enableImplicitTransactions = config.options.enableImplicitTransactions;
       }
 
       if (config.options.enableNumericRoundabort != undefined) {
-        this.validateBooleanOptions(config.options.enableNumericRoundabort, 'options.enableNumericRoundabort');
+        if (typeof config.options.enableNumericRoundabort !== 'boolean') {
+          throw new TypeError('options.enableNumericRoundabort must be a boolean (true or false).');
+        }
+
         this.config.options.enableNumericRoundabort = config.options.enableNumericRoundabort;
       }
 
       if (config.options.enableQuotedIdentifier !== undefined) {
-        this.validateBooleanOptions(config.options.enableQuotedIdentifier, 'options.enableQuotedIdentifier');
+        if (typeof config.options.enableQuotedIdentifier !== 'boolean') {
+          throw new TypeError('options.enableQuotedIdentifier must be a boolean (true or false).');
+        }
+
         this.config.options.enableQuotedIdentifier = config.options.enableQuotedIdentifier;
       }
 
       if (config.options.encrypt != undefined) {
-        this.validateBooleanOptions(config.options.encrypt, 'options.encrypt');
         this.config.options.encrypt = config.options.encrypt;
       }
 
       if (config.options.fallbackToDefaultDb != undefined) {
-        this.validateBooleanOptions(config.options.fallbackToDefaultDb, 'options.fallbackToDefaultDb');
+        this.sendBooleanDeprecationMessage(config.options.fallbackToDefaultDb, 'options.fallbackToDefaultDb');
         this.config.options.fallbackToDefaultDb = config.options.fallbackToDefaultDb;
       }
 
@@ -256,7 +288,7 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.multiSubnetFailover != undefined) {
-        this.validateBooleanOptions(config.options.multiSubnetFailover, 'options.multiSubnetFailover');
+        this.sendBooleanDeprecationMessage(config.options.multiSubnetFailover, 'options.multiSubnetFailover');
         this.config.options.multiSubnetFailover = !!config.options.multiSubnetFailover;
       }
 
@@ -274,7 +306,7 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.readOnlyIntent != undefined) {
-        this.validateBooleanOptions(config.options.readOnlyIntent, 'options.readOnlyIntent');
+        this.sendBooleanDeprecationMessage(config.options.readOnlyIntent, 'options.readOnlyIntent');
         this.config.options.readOnlyIntent = config.options.readOnlyIntent;
       }
 
@@ -299,12 +331,12 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.rowCollectionOnDone != undefined) {
-        this.validateBooleanOptions(config.options.rowCollectionOnDone, 'options.rowCollectionOnDone');
+        this.sendBooleanDeprecationMessage(config.options.rowCollectionOnDone, 'options.rowCollectionOnDone');
         this.config.options.rowCollectionOnDone = config.options.rowCollectionOnDone;
       }
 
       if (config.options.rowCollectionOnRequestCompletion != undefined) {
-        this.validateBooleanOptions(config.options.rowCollectionOnRequestCompletion, 'options.rowCollectionOnRequestCompletion');
+        this.sendBooleanDeprecationMessage(config.options.rowCollectionOnRequestCompletion, 'options.rowCollectionOnRequestCompletion');
         this.config.options.rowCollectionOnRequestCompletion = config.options.rowCollectionOnRequestCompletion;
       }
 
@@ -317,17 +349,17 @@ class Connection extends EventEmitter {
       }
 
       if (config.options.trustServerCertificate != undefined) {
-        this.validateBooleanOptions(config.options.trustServerCertificate, 'options.trustServerCertificate');
+        this.sendBooleanDeprecationMessage(config.options.trustServerCertificate, 'options.trustServerCertificate');
         this.config.options.trustServerCertificate = config.options.trustServerCertificate;
       }
 
       if (config.options.useColumnNames != undefined) {
-        this.validateBooleanOptions(config.options.useColumnNames, 'options.useColumnNames');
+        this.sendBooleanDeprecationMessage(config.options.useColumnNames, 'options.useColumnNames');
         this.config.options.useColumnNames = config.options.useColumnNames;
       }
 
       if (config.options.useUTC != undefined) {
-        this.validateBooleanOptions(config.options.useUTC, 'options.useUTC');
+        this.sendBooleanDeprecationMessage(config.options.useUTC, 'options.useUTC');
         this.config.options.useUTC = config.options.useUTC;
       }
     }
@@ -366,9 +398,9 @@ class Connection extends EventEmitter {
     };
   }
 
-  validateBooleanOptions(option, optionName) {
+  sendBooleanDeprecationMessage(option, optionName) {
     if (typeof option !== 'boolean') {
-      throw new TypeError(`${optionName} must be a boolean (true or false).`);
+      deprecate(`Passing non-boolean values for ${optionName} is deprecated and will be removed. Please specify \`true\` or \`false\` instead.`);
     }
   }
 
