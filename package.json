@@ -12,7 +12,7 @@
     "Phil Dodderidge <pdodde@poyntz.com>",
     "Zach Aller"
   ],
-  "name": "tedious",
+  "name": "tedioustest",
   "description": "A TDS driver, for connecting to MS SQLServer databases.",
   "keywords": [
     "sql",
@@ -24,14 +24,14 @@
     "msnodesql",
     "azure"
   ],
-  "homepage": "https://github.com/tediousjs/tedious",
-  "bugs": "https://github.com/tediousjs/tedious/issues",
+  "homepage": "https://github.com/Hadis-Fard/tedious.git",
+  "bugs": "https://github.com/hadis-fard/tedious/issues",
   "license": "MIT",
   "version": "0.0.0-dev",
   "main": "./lib/tedious.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tediousjs/tedious.git"
+    "url": "https://github.com/Hadis-Fard/tedious.git"
   },
   "engines": {
     "node": ">= 4"
