@@ -37,6 +37,7 @@
     "node": ">= 4"
   },
   "publishConfig": {
+    "branch":"npmTag",
     "tag": "next"
   },
   "dependencies": {

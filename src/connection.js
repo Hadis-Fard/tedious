@@ -23,6 +23,7 @@ const Connector = require('./connector').Connector;
 
 // A rather basic state machine for managing a connection.
 // Implements something approximating s3.2.1.
+// To test publishing
 
 const KEEP_ALIVE_INITIAL_DELAY = 30 * 1000;
 const DEFAULT_CONNECT_TIMEOUT = 15 * 1000;
