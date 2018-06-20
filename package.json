@@ -80,6 +80,9 @@
     "prepublish": "npm run build",
     "semantic-release": "semantic-release"
   },
+  "release": {
+    "publish": ["@semantic-release/npm", "@semantic-release/github"]
+  },
   "babel": {
     "presets": [
       [
