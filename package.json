@@ -27,7 +27,7 @@
   "homepage": "https://github.com/Hadis-Fard/tedious.git",
   "bugs": "https://github.com/hadis-fard/tedious/issues",
   "license": "MIT",
-  "version": "0.0.0-development",
+  "version": "0.0.0-dev",
   "main": "./lib/tedious.js",
   "repository": {
     "type": "git",
