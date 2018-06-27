@@ -1,28 +1,12 @@
 {
-  "author": "Mike D Pilsbury <mike.pilsbury@gmail.com>",
+  "author": "Hadis",
   "contributors": [
-    "Alex Robson",
-    "Arthur Schreiber",
-    "Bret Copeland <bret@atlantisflight.org> (https://github.com/bretcope)",
-    "Bryan Ross <bryan@rossipedia.com> (https://github.com/rossipedia)",
-    "Ciaran Jessup <ciaranj@gmail.com>",
-    "Cort Fritz <cfritz@caa.com>",
-    "lastonesky",
-    "Patrik Simek <patrik@patriksimek.cz>",
-    "Phil Dodderidge <pdodde@poyntz.com>",
-    "Zach Aller"
+    "test"
   ],
   "name": "tedioustest",
-  "description": "A TDS driver, for connecting to MS SQLServer databases.",
+  "description": "This is a test, do not use this package",
   "keywords": [
-    "sql",
-    "database",
-    "mssql",
-    "sqlserver",
-    "sql-server",
-    "tds",
-    "msnodesql",
-    "azure"
+    "npmTEST"
   ],
   "homepage": "https://github.com/Hadis-Fard/tedious.git",
   "bugs": "https://github.com/hadis-fard/tedious/issues",
