@@ -37,6 +37,11 @@ module.exports = {
 
       threeHundredthsOfSecond = milliseconds / (3 + (1 / 3));
       threeHundredthsOfSecond = Math.round(threeHundredthsOfSecond);
+      // 25920000 equals one day
+      if (threeHundredthsOfSecond === 25920000) {
+        days += 1;
+        threeHundredthsOfSecond = 0;
+      }
 
       buffer.writeUInt8(8);
       buffer.writeInt32LE(days);
