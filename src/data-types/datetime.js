@@ -42,7 +42,7 @@ module.exports = {
         days += 1;
         threeHundredthsOfSecond = 0;
       }
-      
+
       buffer.writeUInt8(8);
       buffer.writeInt32LE(days);
       buffer.writeUInt32LE(threeHundredthsOfSecond);
