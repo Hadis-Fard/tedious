@@ -92,7 +92,7 @@ module.exports = class WritableTrackingBuffer {
   }
 
   getPos() {
-    return this.compositeBuffer.length + this.position;
+    return this.position;
   }
 
   getLen() {
