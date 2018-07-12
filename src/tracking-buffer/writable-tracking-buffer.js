@@ -83,12 +83,14 @@ module.exports = class WritableTrackingBuffer {
   }
 
   writeUInt32LEatOffset(value: number, offset: number) {
+    console.log("buffer len  " +  this.buffer.length);
     if (offset < this.compositeBuffer.length) {
       console.log("compositeBuffer len  " +  this.compositeBuffer.length);
       this.compositeBuffer.writeUInt32LE(value, offset);
     }
     else {
       console.log("buffer len  " +  this.buffer.length);
+      offset -= this.compositeBuffer.length;
       this.buffer.writeUInt32LE(value, offset);
     }
   }
