@@ -97,7 +97,12 @@ module.exports = class WritableTrackingBuffer {
   }
 
   getPos() {
-    return this.compositeBuffer.length + this.position;
+    console.log("getpos: ");
+    console.log("comp len  " + this.compositeBuffer.length);
+    console.log("buffer len  " + this.buffer.length);
+    const pos =  this.compositeBuffer.length + this.position;
+    console.log("******pos" + pos);
+    return pos;
   }
 
   getLen() {
