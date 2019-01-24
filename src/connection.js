@@ -73,8 +73,9 @@ class Connection extends EventEmitter {
         throw new TypeError('The "config.authentication.type" property must be of type string.');
       }
 
-      if (config.authentication.type !== 'default' && config.authentication.type !== 'ntlm' && config.authentication.type !== 'azure-active-directory-password') {
-        throw new TypeError('The "config.authentication.type" property must one of "default", "ntlm" or "azure-active-directory-password".');
+      if (config.authentication.type !== 'default' && config.authentication.type !== 'ntlm' && config.authentication.type !== 'azure-active-directory-password'
+          && config.authentication.type !== 'azure-active-directory-access-token') {
+        throw new TypeError('The "config.authentication.type" property must one of "default", "ntlm", "azure-active-directory-password" or "azure-active-directory-access-token".');
       }
 
       if (config.authentication.options !== undefined) {
@@ -97,17 +98,29 @@ class Connection extends EventEmitter {
         }
       }
 
-      authentication = {
-        type: config.authentication.type,
-        options: config.authentication.type === 'ntlm' ? {
-          userName: config.authentication.options.userName,
-          password: config.authentication.options.password,
-          domain: config.authentication.options.domain && config.authentication.options.domain.toUpperCase()
-        } : {
-          userName: config.authentication.options.userName,
-          password: config.authentication.options.password
+      authentication = {type: config.authentication.type};
+      switch(authentication.type) {
+        case 'ntlm':
+          authentication.options = {
+            userName: config.authentication.options.userName,
+            password: config.authentication.options.password,
+            domain: config.authentication.options.domain && config.authentication.options.domain.toUpperCase()
+          }
+          break;
+        case 'azure-active-directory-access-token':
+          authentication.options = {
+            userName: config.authentication.options.userName,
+            password: config.authentication.options.password,
+            token: config.authentication.options.token 
+          }
+          break;
+        default:
+          authentication.options = {
+            userName: config.authentication.options.userName,
+            password: config.authentication.options.password
         }
-      };
+      }
+
     } else {
       if (config.domain !== undefined) {
         if (typeof config.domain !== 'string') {
@@ -1197,7 +1210,15 @@ class Connection extends EventEmitter {
           workflow: 'default'
         };
         break;
-
+        
+      case 'azure-active-directory-access-token':
+        payload.fedAuth = {
+          type: 'SECURITYTOKEN',
+          echo: this.fedAuthRequired,
+          fedAuthToken: authentication.options.token.accessToken
+        };
+        break; 
+           
       case 'ntlm':
         payload.sspi = createNTLMRequest({ domain: authentication.options.domain });
         break;
@@ -1959,6 +1980,9 @@ Connection.prototype.STATE = {
       },
       data: function(data) {
         this.sendDataToTokenStreamParser(data);
+      },
+      routingChange: function() {
+        this.transitionTo(this.STATE.REROUTING);
       },
       routingChange: function() {
         this.transitionTo(this.STATE.REROUTING);
