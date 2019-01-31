@@ -396,12 +396,22 @@ class Login7Payload {
           break;
 
         case 'SECURITYTOKEN':
-          const tokenLen = Buffer.byteLength(fedAuth.fedAuthToken, 'ucs2');
-          const buf = Buffer.alloc(6 + tokenLen);
-          buf.writeUInt8(FEDAUTH_OPTIONS.FEATURE_ID, 0);
-          buf.writeUInt32LE( tokenLen , 1);
-          buf.writeUInt8((FEDAUTH_OPTIONS.LIBRARY_SECURITYTOKEN << 1) | (fedAuth.echo ? FEDAUTH_OPTIONS.FEDAUTH_YES_ECHO : FEDAUTH_OPTIONS.FEDAUTH_NO_ECHO), 5);
-          buf.write(fedAuth.fedAuthToken, 6, 'ucs2');
+          let offset = 0;
+          const tokenLen = Buffer.byteLength(fedAuth.fedAuthToken);
+          const buf = Buffer.alloc( 10 + tokenLen);
+          buf.writeUInt8(FEDAUTH_OPTIONS.FEATURE_ID, offset);
+          offset += 1;
+          //featureDataLen
+          buf.writeUInt32LE( tokenLen + 4 + 1 , offset);
+          offset += 4;
+          //Options
+          buf.writeUInt8((FEDAUTH_OPTIONS.LIBRARY_SECURITYTOKEN << 1) | (fedAuth.echo ? FEDAUTH_OPTIONS.FEDAUTH_YES_ECHO : FEDAUTH_OPTIONS.FEDAUTH_NO_ECHO), offset);
+          offset += 1;
+          // token length
+          buf.writeInt32LE(tokenLen, offset);
+          offset += 4;
+          // token
+          buf.write(fedAuth.fedAuthToken, offset);
           buffers.push(buf);
           break;
       }
