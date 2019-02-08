@@ -99,26 +99,24 @@ class Connection extends EventEmitter {
       }
 
       authentication = {type: config.authentication.type};
-      switch(authentication.type) {
+      switch (authentication.type) {
         case 'ntlm':
           authentication.options = {
             userName: config.authentication.options.userName,
             password: config.authentication.options.password,
             domain: config.authentication.options.domain && config.authentication.options.domain.toUpperCase()
-          }
+          };
           break;
         case 'azure-active-directory-access-token':
           authentication.options = {
-            userName: config.authentication.options.userName,
-            password: config.authentication.options.password,
-            token: config.authentication.options.token 
-          }
+            token: config.authentication.options.token
+          };
           break;
         default:
           authentication.options = {
             userName: config.authentication.options.userName,
             password: config.authentication.options.password
-        }
+          };
       }
 
     } else {
@@ -996,7 +994,6 @@ class Connection extends EventEmitter {
         this.socketClose();
       });
       this.socket.on('end', () => {
-        console.log("-----socket end");
         this.socketEnd();
       });
       this.messageIo = new MessageIO(this.socket, this.config.options.packetSize, this.debug);
@@ -1211,15 +1208,15 @@ class Connection extends EventEmitter {
           workflow: 'default'
         };
         break;
-        
+
       case 'azure-active-directory-access-token':
         payload.fedAuth = {
           type: 'SECURITYTOKEN',
           echo: this.fedAuthRequired,
           fedAuthToken: authentication.options.token.accessToken
         };
-        break; 
-           
+        break;
+
       case 'ntlm':
         payload.sspi = createNTLMRequest({ domain: authentication.options.domain });
         break;
@@ -1262,7 +1259,6 @@ class Connection extends EventEmitter {
 
   // Returns false to apply backpressure.
   sendDataToTokenStreamParser(data) {
-    console.log('------sendDataToTokenStreamParser----');
     return this.tokenStreamParser.addBuffer(data);
   }
 
@@ -1852,8 +1848,7 @@ Connection.prototype.STATE = {
 
           const { authentication } = this.config;
 
-          if (authentication.type === 'azure-active-directory-password' || authentication.type === 'azure-active-directory-access-token') {
-            console.log('STATE.SENT_LOGIN7_WITH_FEDAUTH');
+          if (authentication.type === 'azure-active-directory-password') {
             this.transitionTo(this.STATE.SENT_LOGIN7_WITH_FEDAUTH);
           } else if (authentication.type === 'ntlm') {
             this.transitionTo(this.STATE.SENT_LOGIN7_WITH_NTLM);
@@ -1881,7 +1876,6 @@ Connection.prototype.STATE = {
       },
       featureExtAck: function(token) {
         const { authentication } = this.config;
-        console.log("---------featureext ack---------")
         if (authentication.type === 'azure-active-directory-password' || authentication.type === 'azure-active-directory-access-token' ) {
           if (token.fedAuth === undefined) {
             this.loginError = ConnectionError('Did not receive Active Directory authentication acknowledgement');
@@ -1992,7 +1986,6 @@ Connection.prototype.STATE = {
         this.fedAuthInfoToken = token;
       },
       message: function() {
-        console.log('-----------message event fired---------------');
         if (this.fedAuthInfoToken && this.fedAuthInfoToken.stsurl && this.fedAuthInfoToken.spn) {
           const clientId = '7f98cb04-cd1e-40df-9140-3bf7e2cea4db';
           const context = new AuthenticationContext(this.fedAuthInfoToken.stsurl);
