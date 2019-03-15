@@ -74,8 +74,8 @@ class Connection extends EventEmitter {
       }
 
       if (config.authentication.type !== 'default' && config.authentication.type !== 'ntlm' && config.authentication.type !== 'azure-active-directory-password'
-          && config.authentication.type !== 'azure-active-directory-access-token') {
-        throw new TypeError('The "config.authentication.type" property must one of "default", "ntlm", "azure-active-directory-password" or "azure-active-directory-access-token".');
+          && config.authentication.type !== 'azure-active-directory-access-token' && config.authentication.type !== 'azure-active-directory-MSI') {
+        throw new TypeError('The "config.authentication.type" property must one of "default", "ntlm", "azure-active-directory-password", "azure-active-directory-access-token", or "azure-active-directory-MSI".');
       }
 
       if (config.authentication.options !== undefined) {
@@ -116,6 +116,11 @@ class Connection extends EventEmitter {
         case 'azure-active-directory-access-token':
           authentication.options = {
             token: config.authentication.options.token
+          };
+          break;
+        case 'azure-active-directory-MSI':
+          authentication.options = {
+            MSIclientID: config.authentication.options.clientID
           };
           break;
         default:
@@ -1247,7 +1252,13 @@ class Connection extends EventEmitter {
           fedAuthToken: authentication.options.token.accessToken
         };
         break;
-
+      case 'azure-active-directory-MSI':
+        payload.fedAuth = {
+          type: 'ADAL',
+          echo: this.fedAuthRequired,
+          workflow: 'msi'
+        };
+        break;
       case 'ntlm':
         payload.sspi = createNTLMRequest({ domain: authentication.options.domain });
         break;
@@ -1880,7 +1891,7 @@ Connection.prototype.STATE = {
 
           const { authentication } = this.config;
 
-          if (authentication.type === 'azure-active-directory-password') {
+          if (authentication.type === 'azure-active-directory-password' || authentication.type === 'azure-active-directory-MSI') {
             this.transitionTo(this.STATE.SENT_LOGIN7_WITH_FEDAUTH);
           } else if (authentication.type === 'ntlm') {
             this.transitionTo(this.STATE.SENT_LOGIN7_WITH_NTLM);
@@ -1908,7 +1919,7 @@ Connection.prototype.STATE = {
       },
       featureExtAck: function(token) {
         const { authentication } = this.config;
-        if (authentication.type === 'azure-active-directory-password' || authentication.type === 'azure-active-directory-access-token') {
+        if (authentication.type === 'azure-active-directory-password' || authentication.type === 'azure-active-directory-access-token' || authentication.type === 'azure-active-directory-MSI') {
           if (token.fedAuth === undefined) {
             this.loginError = ConnectionError('Did not receive Active Directory authentication acknowledgement');
             this.loggedIn = false;
@@ -2020,21 +2031,27 @@ Connection.prototype.STATE = {
         this.fedAuthInfoToken = token;
       },
       message: function() {
+
         if (this.fedAuthInfoToken && this.fedAuthInfoToken.stsurl && this.fedAuthInfoToken.spn) {
-          const clientId = '7f98cb04-cd1e-40df-9140-3bf7e2cea4db';
-          const context = new AuthenticationContext(this.fedAuthInfoToken.stsurl);
-          const authentication = this.config.authentication;
+          const { authentication } = this.config;
 
-          context.acquireTokenWithUsernamePassword(this.fedAuthInfoToken.spn, authentication.options.userName, authentication.options.password, clientId, (err, tokenResponse) => {
-            if (err) {
-              this.loginError = ConnectionError('Security token could not be authenticated or authorized.', 'EFEDAUTH');
-              this.emit('connect', this.loginError);
-              this.transitionTo(this.STATE.FINAL);
-              return;
-            }
+          if (authentication.type === 'azure-active-directory-password') {
+            const clientId = '7f98cb04-cd1e-40df-9140-3bf7e2cea4db';
+            const context = new AuthenticationContext(this.fedAuthInfoToken.stsurl);
+            const authentication = this.config.authentication;
 
-            this.sendFedAuthResponsePacket(tokenResponse);
-          });
+            context.acquireTokenWithUsernamePassword(this.fedAuthInfoToken.spn, authentication.options.userName, authentication.options.password, clientId, (err, tokenResponse) => {
+              if (err) {
+                this.loginError = ConnectionError('Security token could not be authenticated or authorized.', 'EFEDAUTH');
+                this.emit('connect', this.loginError);
+                this.transitionTo(this.STATE.FINAL);
+                return;
+              }
+              this.sendFedAuthResponsePacket(tokenResponse);
+            });
+          } else if (authentication.type === 'azure-active-directory-MSI') {
+            // generate MSI token
+          }
         } else {
           if (this.loginError) {
             if (this.loginError.isTransient) {

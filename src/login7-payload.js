@@ -60,7 +60,8 @@ const FEDAUTH_OPTIONS = {
   FEDAUTH_YES_ECHO: 0x01,
   FEDAUTH_NO_ECHO: 0x00,
   ADAL_WORKFLOW_USER_PASS: 0x01,
-  ADAL_WORKFLOW_INTEGRATED: 0x02
+  ADAL_WORKFLOW_INTEGRATED: 0x02,
+  ADAL_WORKFLOW_MSI: 0x03
 };
 
 const FEATURE_EXT_TERMINATOR = 0xFF;
@@ -103,7 +104,7 @@ class Login7Payload {
   attachDbFile: string | typeof undefined;
   changePassword: string | typeof undefined;
 
-  fedAuth: { type: 'ADAL', echo: boolean, workflow: 'default' | 'integrated' } | typeof undefined;
+  fedAuth: { type: 'ADAL', echo: boolean, workflow: 'default' | 'integrated' | 'msi'} | typeof undefined;
 
   constructor({ tdsVersion, packetSize, clientProgVer, clientPid, connectionId, clientTimeZone, clientLcid }: Options) {
     this.tdsVersion = tdsVersion;
@@ -391,7 +392,7 @@ class Login7Payload {
           buffer.writeUInt8(FEDAUTH_OPTIONS.FEATURE_ID, 0);
           buffer.writeUInt32LE(2, 1);
           buffer.writeUInt8((FEDAUTH_OPTIONS.LIBRARY_ADAL << 1) | (fedAuth.echo ? FEDAUTH_OPTIONS.FEDAUTH_YES_ECHO : FEDAUTH_OPTIONS.FEDAUTH_NO_ECHO), 5);
-          buffer.writeUInt8(fedAuth.workflow == 'integrated' ? 0x02 : FEDAUTH_OPTIONS.ADAL_WORKFLOW_USER_PASS, 6);
+          buffer.writeUInt8(fedAuth.workflow == 'msi' ? FEDAUTH_OPTIONS.ADAL_WORKFLOW_MSI : FEDAUTH_OPTIONS.ADAL_WORKFLOW_USER_PASS, 6);
           buffers.push(buffer);
           break;
 
